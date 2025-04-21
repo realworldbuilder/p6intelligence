@@ -24,13 +24,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const stakeholderReportContainer = document.getElementById('stakeholder-report');
     const stakeholderReportContent = document.getElementById('stakeholder-report-content');
     const stakeholderReportLoading = document.getElementById('stakeholder-report-loading');
+    
+    // Tab Elements
+    const tabButtons = document.querySelectorAll('.ai-tab-button');
+    const tabContents = document.querySelectorAll('.ai-tab-content');
 
     // Initialize from localStorage if available
     if (localStorage.getItem('openai_api_key')) {
         apiKeyInput.value = localStorage.getItem('openai_api_key');
         configureAI({
             apiKey: localStorage.getItem('openai_api_key'),
-            model: localStorage.getItem('openai_model') || 'gpt-4'
+            model: localStorage.getItem('openai_model') || 'gpt-4o'
         });
         
         if (localStorage.getItem('openai_model')) {
@@ -60,16 +64,31 @@ document.addEventListener('DOMContentLoaded', function() {
             // Enable report generation buttons
             toggleReportButtons(true);
 
-            alert('API configuration saved successfully!');
+            showNotification('API configuration saved successfully!', 'success');
         } else {
-            alert('Please enter a valid API key.');
+            showNotification('Please enter a valid API key.', 'error');
         }
+    });
+    
+    // Tab Switching
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabName = button.dataset.tab;
+            
+            // Update active button
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            
+            // Update active content
+            tabContents.forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        });
     });
 
     // Generate Executive Summary
     generateSummaryBtn.addEventListener('click', function() {
         if (!projects.current) {
-            alert('Please analyze a project first.');
+            showNotification('Please analyze a project first.', 'warning');
             return;
         }
 
@@ -102,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Generate Schedule Analysis
     generateScheduleBtn.addEventListener('click', function() {
         if (!projects.current) {
-            alert('Please analyze a project first.');
+            showNotification('Please analyze a project first.', 'warning');
             return;
         }
 
@@ -148,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Generate Stakeholder Report
     generateStakeholderBtn.addEventListener('click', function() {
         if (!projects.current) {
-            alert('Please analyze a project first.');
+            showNotification('Please analyze a project first.', 'warning');
             return;
         }
 
@@ -186,6 +205,30 @@ document.addEventListener('DOMContentLoaded', function() {
         generateSummaryBtn.disabled = !enabled;
         generateScheduleBtn.disabled = !enabled;
         generateStakeholderBtn.disabled = !enabled;
+    }
+    
+    // Helper function to show notifications
+    function showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `ai-notification ai-notification-${type}`;
+        notification.innerHTML = message;
+        
+        // Append to body
+        document.body.appendChild(notification);
+        
+        // Show with animation
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 300);
+        }, 3000);
     }
 
     // Listen for project analysis completion

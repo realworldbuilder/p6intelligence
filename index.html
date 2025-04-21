@@ -678,10 +678,12 @@ DONE -- Earned Value != Actual Cost
                             <div class="ai-settings-row">
                                 <label for="api-key" class="ai-settings-label">OpenAI API Key:</label>
                                 <input type="password" id="api-key" name="api-key" class="ai-settings-input" placeholder="sk-...">
+                                <small style="margin-top: 5px; color: #7f8c8d;">Your API key is stored locally in your browser and never sent to our servers.</small>
                             </div>
                             <div class="ai-settings-row">
                                 <label for="model" class="ai-settings-label">Model:</label>
                                 <select id="model" name="model" class="ai-settings-input">
+                                    <option value="gpt-4o">GPT-4o (Recommended)</option>
                                     <option value="gpt-4">GPT-4</option>
                                     <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
                                 </select>
@@ -692,54 +694,56 @@ DONE -- Earned Value != Actual Cost
                 </div>
                 
                 <div class="card border-rad-8px box-shadow width-100 margin-top-20px">
-                    <div class="">
-                        <h3 class="pad-bm-05em">Executive Summary</h3>
+                    <div class="ai-reports-tabs">
+                        <button class="ai-tab-button active" data-tab="executive">Executive Summary</button>
+                        <button class="ai-tab-button" data-tab="schedule">Schedule Analysis</button>
+                        <button class="ai-tab-button" data-tab="stakeholder">Stakeholder Reports</button>
                     </div>
-                    <div class="pad-10px">
-                        <button id="generate-summary-btn" class="ai-settings-button" disabled>Generate Executive Summary</button>
-                        <div id="executive-summary" class="ai-report-container" style="display: none;">
-                            <div class="ai-report-loading" id="executive-summary-loading" style="display: none;">
-                                <div class="ai-report-loading-spinner"></div>
-                                <p>Generating executive summary...</p>
+                    
+                    <div id="executive-tab" class="ai-tab-content active">
+                        <div class="pad-10px">
+                            <p>Get a comprehensive overview of your project status, key metrics, and potential issues.</p>
+                            <button id="generate-summary-btn" class="ai-settings-button" disabled>Generate Executive Summary</button>
+                            <div id="executive-summary" class="ai-report-container" style="display: none;">
+                                <div class="ai-report-loading" id="executive-summary-loading" style="display: none;">
+                                    <div class="ai-report-loading-spinner"></div>
+                                    <p>Generating executive summary...</p>
+                                </div>
+                                <div id="executive-summary-content"></div>
                             </div>
-                            <div id="executive-summary-content"></div>
                         </div>
                     </div>
-                </div>
-
-                <div class="card border-rad-8px box-shadow width-100 margin-top-20px">
-                    <div class="">
-                        <h3 class="pad-bm-05em">Schedule Analysis</h3>
-                    </div>
-                    <div class="pad-10px">
-                        <button id="generate-schedule-btn" class="ai-settings-button" disabled>Generate Schedule Analysis</button>
-                        <div id="schedule-analysis" class="ai-report-container" style="display: none;">
-                            <div class="ai-report-loading" id="schedule-analysis-loading" style="display: none;">
-                                <div class="ai-report-loading-spinner"></div>
-                                <p>Generating schedule analysis...</p>
+                    
+                    <div id="schedule-tab" class="ai-tab-content">
+                        <div class="pad-10px">
+                            <p>Analyze your schedule for risks, bottlenecks, and receive optimization recommendations.</p>
+                            <button id="generate-schedule-btn" class="ai-settings-button" disabled>Generate Schedule Analysis</button>
+                            <div id="schedule-analysis" class="ai-report-container" style="display: none;">
+                                <div class="ai-report-loading" id="schedule-analysis-loading" style="display: none;">
+                                    <div class="ai-report-loading-spinner"></div>
+                                    <p>Generating schedule analysis...</p>
+                                </div>
+                                <div id="schedule-analysis-content"></div>
                             </div>
-                            <div id="schedule-analysis-content"></div>
                         </div>
                     </div>
-                </div>
-
-                <div class="card border-rad-8px box-shadow width-100 margin-top-20px">
-                    <div class="">
-                        <h3 class="pad-bm-05em">Stakeholder Reports</h3>
-                    </div>
-                    <div class="pad-10px">
-                        <div class="stakeholder-selector">
-                            <button class="stakeholder-button active" data-stakeholder="executive">Executive</button>
-                            <button class="stakeholder-button" data-stakeholder="pm">Project Manager</button>
-                            <button class="stakeholder-button" data-stakeholder="team_lead">Team Lead</button>
-                        </div>
-                        <button id="generate-stakeholder-btn" class="ai-settings-button" disabled>Generate Stakeholder Report</button>
-                        <div id="stakeholder-report" class="ai-report-container" style="display: none;">
-                            <div class="ai-report-loading" id="stakeholder-report-loading" style="display: none;">
-                                <div class="ai-report-loading-spinner"></div>
-                                <p>Generating stakeholder report...</p>
+                    
+                    <div id="stakeholder-tab" class="ai-tab-content">
+                        <div class="pad-10px">
+                            <p>Generate tailored reports for different project stakeholders with relevant information and insights.</p>
+                            <div class="stakeholder-selector">
+                                <button class="stakeholder-button active" data-stakeholder="executive">Executive</button>
+                                <button class="stakeholder-button" data-stakeholder="pm">Project Manager</button>
+                                <button class="stakeholder-button" data-stakeholder="team_lead">Team Lead</button>
                             </div>
-                            <div id="stakeholder-report-content"></div>
+                            <button id="generate-stakeholder-btn" class="ai-settings-button" disabled>Generate Stakeholder Report</button>
+                            <div id="stakeholder-report" class="ai-report-container" style="display: none;">
+                                <div class="ai-report-loading" id="stakeholder-report-loading" style="display: none;">
+                                    <div class="ai-report-loading-spinner"></div>
+                                    <p>Generating stakeholder report...</p>
+                                </div>
+                                <div id="stakeholder-report-content"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
