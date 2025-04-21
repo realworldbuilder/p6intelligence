@@ -19,6 +19,7 @@ DONE -- Earned Value != Actual Cost
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="title">P6Intelligence</title>
     <link rel="stylesheet" type="text/css" href="./static/css/style.css">
+    <link rel="stylesheet" type="text/css" href="./static/css/ai-reports.css">
 </head>
 <body>
     <aside id="menu" class="menu hidden">
@@ -130,6 +131,7 @@ DONE -- Earned Value != Actual Cost
                     </div>
                 </li>
                 <li><div id="critical-btn" class="btn">Critical Path</div></li>
+                <li><div id="ai-reports-btn" onclick="menuClickHandle(event, 'ai-reports')" class="btn">AI Reports</div></li>
             </ul>
         </div>
     </aside>
@@ -663,6 +665,86 @@ DONE -- Earned Value != Actual Cost
         <section id="cost-budget-sec" class="hidden cat"></section>
         <section id="cost-ev-sec" class="hidden cat"></section>
         <section id="cost-regress-sec" class="hidden cat"></section>
+        <section id="ai-reports" class="cat hidden">
+            <div class="flex">
+                <h2 class="width-100 text-center">AI Project Reports</h2>
+                
+                <div class="card border-rad-8px box-shadow width-100 margin-top-20px">
+                    <div class="">
+                        <h3 class="pad-bm-05em">API Configuration</h3>
+                    </div>
+                    <div class="pad-10px ai-settings-container">
+                        <form id="ai-settings-form" class="ai-settings-form">
+                            <div class="ai-settings-row">
+                                <label for="api-key" class="ai-settings-label">OpenAI API Key:</label>
+                                <input type="password" id="api-key" name="api-key" class="ai-settings-input" placeholder="sk-...">
+                            </div>
+                            <div class="ai-settings-row">
+                                <label for="model" class="ai-settings-label">Model:</label>
+                                <select id="model" name="model" class="ai-settings-input">
+                                    <option value="gpt-4">GPT-4</option>
+                                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                                </select>
+                            </div>
+                            <button type="button" id="save-api-config" class="ai-settings-button">Save Configuration</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card border-rad-8px box-shadow width-100 margin-top-20px">
+                    <div class="">
+                        <h3 class="pad-bm-05em">Executive Summary</h3>
+                    </div>
+                    <div class="pad-10px">
+                        <button id="generate-summary-btn" class="ai-settings-button" disabled>Generate Executive Summary</button>
+                        <div id="executive-summary" class="ai-report-container" style="display: none;">
+                            <div class="ai-report-loading" id="executive-summary-loading" style="display: none;">
+                                <div class="ai-report-loading-spinner"></div>
+                                <p>Generating executive summary...</p>
+                            </div>
+                            <div id="executive-summary-content"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-rad-8px box-shadow width-100 margin-top-20px">
+                    <div class="">
+                        <h3 class="pad-bm-05em">Schedule Analysis</h3>
+                    </div>
+                    <div class="pad-10px">
+                        <button id="generate-schedule-btn" class="ai-settings-button" disabled>Generate Schedule Analysis</button>
+                        <div id="schedule-analysis" class="ai-report-container" style="display: none;">
+                            <div class="ai-report-loading" id="schedule-analysis-loading" style="display: none;">
+                                <div class="ai-report-loading-spinner"></div>
+                                <p>Generating schedule analysis...</p>
+                            </div>
+                            <div id="schedule-analysis-content"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-rad-8px box-shadow width-100 margin-top-20px">
+                    <div class="">
+                        <h3 class="pad-bm-05em">Stakeholder Reports</h3>
+                    </div>
+                    <div class="pad-10px">
+                        <div class="stakeholder-selector">
+                            <button class="stakeholder-button active" data-stakeholder="executive">Executive</button>
+                            <button class="stakeholder-button" data-stakeholder="pm">Project Manager</button>
+                            <button class="stakeholder-button" data-stakeholder="team_lead">Team Lead</button>
+                        </div>
+                        <button id="generate-stakeholder-btn" class="ai-settings-button" disabled>Generate Stakeholder Report</button>
+                        <div id="stakeholder-report" class="ai-report-container" style="display: none;">
+                            <div class="ai-report-loading" id="stakeholder-report-loading" style="display: none;">
+                                <div class="ai-report-loading-spinner"></div>
+                                <p>Generating stakeholder report...</p>
+                            </div>
+                            <div id="stakeholder-report-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 </body>
 
@@ -673,4 +755,6 @@ DONE -- Earned Value != Actual Cost
 <script src="./static/js/chart.js"></script>
 <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
 <script src="./static/js/main.js"></script>
+<script src="./static/js/ai-reports.js"></script>
+<script src="./static/js/ai-reports-ui.js"></script>
 </html>

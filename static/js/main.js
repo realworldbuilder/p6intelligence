@@ -764,16 +764,50 @@ const fileSelectors = document.querySelectorAll(".xer");
 const analyzeButton = document.getElementById("analyze-btn");
 
 analyzeButton.addEventListener("click", (e) => {
-    const currSelector = document.getElementById("current-project-selector")
-    const prevSelector = document.getElementById("previous-project-selector")
-    updateProjCard("current", currSelector.value)
-    if (compCheck.checked) { 
-        updateProjCard("previous", prevSelector.value)      
+    // Analyze
+    const currProjSelect = document.getElementById('current-project-selector');
+    const currProjValue = currProjSelect.value;
+    const currProjOption = currProjSelect.options[currProjSelect.selectedIndex];
+    const currProjName = currProjOption.textContent
+    updateProjCard('current', currProjValue)
+
+    document.getElementById('title').textContent = `${currProjName} | P6Intelligence`
+
+    if (document.getElementById('compare-checkbox').checked) {
+        const prevProjSelect = document.getElementById('previous-project-selector');
+        const prevProjValue = prevProjSelect.value;
+        updateProjCard('previous', prevProjValue)
+
+        Array.from(document.getElementsByClassName('base')).forEach(el => el.classList.remove('hidden'))
+        
+        // Previous Project Tasks
+        const projectTasks = () => [...projects.current.tasks.values()]
+        const prevTasks = () => [...projects.previous.tasks.values()]
+
+        // Update Status
+        updates.started.data = projectTasks().filter(task => {
+            return task.inProgress && !hasTask(task, projects.previous)
+        })
+        updates.finished.data = projectTasks().filter(task => {
+            return task.completed && hasTask(task, projects.previous) && !getTask(task, projects.previous).completed
+        })
+        updates.startFinish.data = projectTasks().filter(task => {
+            return task.completed && !hasTask(task, projects.previous)
+        })
+        // ... existing code ...
     }
-    document.getElementById("menu").classList.remove("hidden");
-    document.getElementById("upload").classList.add("hidden");
-    menuClickHandle(event, 'general');
-    document.getElementById("dashboard-btn").classList.add("active-btn")
+
+    // Hide upload section and show menu
+    document.getElementById('upload').style.display = 'none'
+    document.getElementById('menu').classList.remove('hidden')
+    document.getElementById('dashboard-btn').click()
+    
+    // Dispatch event for project analysis completion
+    document.dispatchEvent(new CustomEvent('projectAnalyzed', {
+        detail: {
+            project: projects.current
+        }
+    }));
 })
 
 const checkIfReady = () => {

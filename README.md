@@ -1,6 +1,6 @@
 # P6Intelligence
 
-P6Intelligence is an advanced XER file analyzer for Primavera P6 project files with planned AI integration.
+P6Intelligence is an advanced XER file analyzer for Primavera P6 project files with AI integration.
 
 ## Features
 - Upload and analyze XER files (Primavera P6 project files)
@@ -8,6 +8,7 @@ P6Intelligence is an advanced XER file analyzer for Primavera P6 project files w
 - Analyze schedule, resources, and costs
 - Compare current projects with baseline/previous updates
 - Visual reporting and dashboards
+- AI-powered project reports and analysis
 
 ## Getting Started
 
@@ -24,19 +25,27 @@ To run locally:
 python -m http.server
 ```
 
-## Upcoming AI Features
-This project is being enhanced with artificial intelligence capabilities to provide advanced analytics and insights.
+## AI Features
+This project includes artificial intelligence capabilities to provide advanced analytics and insights:
 
-See [AI_INTEGRATION.md](AI_INTEGRATION.md) for more details on our AI roadmap.
+- Executive summaries highlighting key project metrics and issues
+- Detailed schedule analysis with risk identification
+- Custom reports for different stakeholders (executives, project managers, team leads)
+
+See [AI_INTEGRATION.md](AI_INTEGRATION.md) for more details on the AI roadmap.
 
 ## How to Use
 1. Upload your XER file
 2. Select the project to analyze (if multiple projects exist in the file)
 3. Optionally, upload a baseline XER file for comparison
 4. Click "Analyze" to generate reports
+5. Access AI Reports from the menu and configure your OpenAI API key
+
+## About the Author
+P6Intelligence is a personal project by [Will Hsu](https://willhsu.dev/), focusing on bringing AI capabilities to construction scheduling and project management.
 
 ## Credits
-Based on the js_xer_analyzer by jjCode01, enhanced with new features and AI capabilities.
+This project is based on [js_xer_analyzer](https://github.com/jjCode01/js_xer_analyzer) by jjCode01. The original tool has been enhanced with additional features, improved UI, and AI integration capabilities.
 
 ## License
 MIT
