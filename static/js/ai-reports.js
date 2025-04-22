@@ -15,9 +15,10 @@ const AI_CONFIG = {
 /**
  * Generate a project summary report
  * @param {Object} project - The analyzed project
+ * @param {Object} baseline - The baseline project (optional)
  * @returns {Promise<string>} - HTML content for the report
  */
-async function generateExecutiveSummary(project) {
+async function generateExecutiveSummary(project, baseline = null) {
     try {
         if (!AI_CONFIG.apiKey) {
             return `<div class="error-message">
@@ -30,7 +31,7 @@ async function generateExecutiveSummary(project) {
         const projectData = prepareProjectDataForAI(project);
         
         // Create the prompt for the AI
-        const prompt = `
+        let prompt = `
         Generate an executive summary for a construction/engineering project based on the following data:
         
         Project Name: ${project.name}
@@ -51,8 +52,25 @@ async function generateExecutiveSummary(project) {
         - Budgeted Cost: ${formatCost(project.budgetCost)}
         - Actual Cost: ${formatCost(project.actualCost)}
         - Remaining Cost: ${formatCost(project.remainingCost)}
+        `;
+
+        // Add baseline comparison if available
+        if (baseline) {
+            const baselineData = prepareProjectDataForAI(baseline);
+            prompt += `
+        Baseline Comparison:
+        - Original Planned Finish: ${formatDate(baseline.scd_end_date)} (Current: ${formatDate(project.scd_end_date)})
+        - Original Duration: ${baseline.scheduleDuration} days (Current: ${project.scheduleDuration} days)
+        - Schedule Variance: ${project.scheduleDuration - baseline.scheduleDuration} days
+        - Original Budget: ${formatCost(baseline.budgetCost)} (Current: ${formatCost(project.budgetCost)})
+        - Cost Variance: ${formatCost(project.budgetCost - baseline.budgetCost)}
+        - Original Activity Count: ${baseline.tasks.size} (Current: ${project.tasks.size})
+            `;
+        }
         
-        Identify key project health indicators, potential issues, recommendations, and overall project status.
+        prompt += `
+        ${baseline ? 'Focus on comparing current project status against the baseline.' : 'Identify key project health indicators and potential issues.'}
+        Provide recommendations and assess overall project status.
         Format the response as HTML that can be directly inserted into a web page.
         `;
 
@@ -73,9 +91,10 @@ async function generateExecutiveSummary(project) {
 /**
  * Generate a detailed schedule analysis report
  * @param {Object} project - The analyzed project
+ * @param {Object} baseline - The baseline project (optional)
  * @returns {Promise<string>} - HTML content for the report
  */
-async function generateScheduleAnalysis(project) {
+async function generateScheduleAnalysis(project, baseline = null) {
     try {
         if (!AI_CONFIG.apiKey) {
             return `<div class="error-message">
@@ -88,7 +107,7 @@ async function generateScheduleAnalysis(project) {
         const projectData = prepareProjectDataForAI(project);
 
         // Create the prompt for the AI
-        const prompt = `
+        let prompt = `
         Generate a detailed schedule analysis for a construction/engineering project based on the following data:
         
         Project Name: ${project.name}
@@ -105,9 +124,27 @@ async function generateScheduleAnalysis(project) {
         - Near Critical Activities: ${project.nearCritical.length}
         - Physical % Complete: ${(project.physPercentComp * 100).toFixed(1)}%
         - Schedule % Complete: ${(project.schedPercentComp * 100).toFixed(1)}%
+        `;
+
+        // Add baseline comparison if available
+        if (baseline) {
+            const baselineData = prepareProjectDataForAI(baseline);
+            prompt += `
+        Baseline Schedule Comparison:
+        - Original Start Date: ${formatDate(baseline.start)} (Current: ${formatDate(project.start)})
+        - Original Planned Finish: ${formatDate(baseline.scd_end_date)} (Current: ${formatDate(project.scd_end_date)})
+        - Original Duration: ${baseline.scheduleDuration} days (Current: ${project.scheduleDuration} days)
+        - Schedule Variance: ${project.scheduleDuration - baseline.scheduleDuration} days
+        - Original Critical Activities: ${baseline.critical.length} (Current: ${project.critical.length})
+        - Original Activity Count: ${baseline.tasks.size} (Current: ${project.tasks.size})
+        - Milestone Delays: ${identifyMilestoneDelays(project, baseline)}
+            `;
+        }
         
-        Identify potential schedule risks, bottlenecks, critical path analysis, and provide recommendations for 
-        schedule optimization. Analyze the current progress rate and forecast completion based on the data.
+        prompt += `
+        ${baseline ? 'Focus on analyzing schedule changes from baseline to current, identifying slippage areas, and explaining the impact of deviations.' : 'Identify potential schedule risks and bottlenecks.'}
+        Provide critical path analysis and recommendations for schedule optimization.
+        Analyze the current progress rate and forecast completion based on the data.
         Format the response as HTML that can be directly inserted into a web page.
         `;
 
@@ -128,10 +165,11 @@ async function generateScheduleAnalysis(project) {
 /**
  * Generate a custom report for a specific stakeholder
  * @param {Object} project - The analyzed project
+ * @param {Object} baseline - The baseline project (optional)
  * @param {string} stakeholderType - Type of stakeholder (executive, pm, team_lead)
  * @returns {Promise<string>} - HTML content for the report
  */
-async function generateStakeholderReport(project, stakeholderType) {
+async function generateStakeholderReport(project, stakeholderType, baseline = null) {
     try {
         if (!AI_CONFIG.apiKey) {
             return `<div class="error-message">
@@ -159,7 +197,7 @@ async function generateStakeholderReport(project, stakeholderType) {
         }
 
         // Create the prompt for the AI
-        const prompt = `
+        let prompt = `
         Generate a custom project report for a ${stakeholderType.replace('_', ' ')} based on the following data:
         
         Project Name: ${project.name}
@@ -180,8 +218,26 @@ async function generateStakeholderReport(project, stakeholderType) {
         - Budgeted Cost: ${formatCost(project.budgetCost)}
         - Actual Cost: ${formatCost(project.actualCost)}
         - Remaining Cost: ${formatCost(project.remainingCost)}
+        `;
+
+        // Add baseline comparison if available
+        if (baseline) {
+            const baselineData = prepareProjectDataForAI(baseline);
+            prompt += `
+        Baseline Comparison:
+        - Original Planned Finish: ${formatDate(baseline.scd_end_date)} (Current: ${formatDate(project.scd_end_date)})
+        - Schedule Variance: ${project.scheduleDuration - baseline.scheduleDuration} days
+        - Original Budget: ${formatCost(baseline.budgetCost)} (Current: ${formatCost(project.budgetCost)})
+        - Cost Variance: ${formatCost(project.budgetCost - baseline.budgetCost)}
+        - Earned Value Metrics:
+          * SPI: ${calculateSPI(project, baseline).toFixed(2)}
+          * CPI: ${calculateCPI(project, baseline).toFixed(2)}
+        `;
+        }
         
+        prompt += `
         ${stakeholderFocus}
+        ${baseline ? 'Include analysis of variances from baseline and their impact on project objectives.' : ''}
         
         Format the response as HTML that can be directly inserted into a web page.
         `;
@@ -244,6 +300,55 @@ function prepareProjectDataForAI(project) {
             remainingQty: project.remainingQty
         }
     };
+}
+
+/**
+ * Calculate Schedule Performance Index (SPI)
+ * @param {Object} project - Current project
+ * @param {Object} baseline - Baseline project
+ * @returns {number} - SPI value
+ */
+function calculateSPI(project, baseline) {
+    if (!baseline || !project.schedPercentComp) return 1.0;
+    
+    // Calculate planned percent complete based on baseline duration and current elapsed time
+    const startDate = new Date(project.start);
+    const currentDate = new Date();
+    const totalDuration = baseline.scheduleDuration;
+    const elapsedDays = Math.max(0, Math.floor((currentDate - startDate) / (1000 * 60 * 60 * 24)));
+    
+    const plannedPercentComplete = Math.min(1.0, elapsedDays / totalDuration);
+    
+    // Calculate SPI (Earned Value / Planned Value)
+    return plannedPercentComplete > 0 ? project.schedPercentComp / plannedPercentComplete : 1.0;
+}
+
+/**
+ * Calculate Cost Performance Index (CPI)
+ * @param {Object} project - Current project
+ * @param {Object} baseline - Baseline project
+ * @returns {number} - CPI value
+ */
+function calculateCPI(project, baseline) {
+    if (!baseline || !project.budgetCost || !project.actualCost) return 1.0;
+    
+    // Calculate CPI (Earned Value / Actual Cost)
+    const earnedValue = project.schedPercentComp * project.budgetCost;
+    return project.actualCost > 0 ? earnedValue / project.actualCost : 1.0;
+}
+
+/**
+ * Identify milestone delays between current and baseline
+ * @param {Object} project - Current project
+ * @param {Object} baseline - Baseline project
+ * @returns {string} - Summary of milestone delays
+ */
+function identifyMilestoneDelays(project, baseline) {
+    if (!baseline) return "No baseline data available";
+    
+    // This would need to be implemented based on the actual project data structure
+    // For now, returning a placeholder message
+    return "Analysis of milestone dates requires further implementation";
 }
 
 /**
